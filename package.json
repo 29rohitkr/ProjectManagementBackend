@@ -1,0 +1,21 @@
+{
+  "name": "projectmanagement",
+  "version": "1.0.0",
+  "description": "a project management application for beginners",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node index.js"
+  },
+  "keywords": [
+    "udemy",
+    "course",
+    "backend",
+    "API"
+  ],
+  "author": "Rohit Kumar",
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "3.8.3"
+  }
+}
