@@ -11,6 +11,10 @@ dotenv.config({
 
 const port = process.env.PORT || 3000;
 
+// import the routes
+import healthCheckRouter from "./routes/healthcheck.routes.js"
+
+app.use("/api/v1/healthcheck", healthCheckRouter);
 
 connectDB()
     .then(() => {
