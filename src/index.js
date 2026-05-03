@@ -3,7 +3,6 @@ import app from "./app.js"
 import connectDB from './db/index.js';
 
 import dns from "node:dns/promises";
-// console.log(await dns.getServers());
 dns.setServers(["1.1.1.1"]);
 
 dotenv.config({
@@ -20,7 +19,7 @@ connectDB()
         })
     })
     .catch((err) => {
-        console.error("MongDB connection error", err);
+        console.error("MongoDB connection error", err);
         process.exit(1);
     })
 
