@@ -1,6 +1,46 @@
 import Mailgen from "mailgen";
+import nodemailer from "nodemailer";
 
 
+const sendMail = async (options) => {
+    const mailGenerator = new Mailgen({
+        theme: 'default',
+        product: {
+            // Appears in header & footer of e-mails
+            name: 'Project Management',
+            link: 'https://devmodeon.tech/projectm'
+        }
+    });
+
+    const emailHtml = mailGenerator.generate(options.mailGenContent);
+    const emailText = mailGenerator.generatePlaintext(options.mailGenContent);
+
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.MAILTRAP_HOST,
+        port: process.env.MAILTRAP_PORT,
+        auth: {
+            user: process.env.MAILTRAP_USER,
+            pass: process.env.MAILTRAP_PASS
+        }
+    });
+
+    const mail = {
+        from: 'Project Team <team@devmodeon.tech>',
+        to: options.email, //"29rkwhitelist@gmail.com",
+        subject: options.subject,//"This is a test mail.",
+        html: emailHtml,
+        text: emailText
+    }
+
+    try {
+        await transporter.sendMail(mail);
+    } catch (error) {
+        console.error("Email service failed. check your configuration, credentials");
+        console.error("Error: ", error);
+    }
+
+}
 
 // Email Verification
 const emailVerificationMailgenContent = (username, verificationURL) => {
@@ -41,4 +81,4 @@ const forgotPasswordMailgenContent = (username, resetURL) => {
 }
 
 
-export { emailVerificationMailgenContent, forgotPasswordMailgenContent };
+export { emailVerificationMailgenContent, forgotPasswordMailgenContent, sendMail };
