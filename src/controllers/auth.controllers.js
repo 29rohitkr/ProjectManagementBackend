@@ -8,7 +8,7 @@ const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId);
         const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRafreshToken();
+        const refreshToken = user.generateRefreshToken();
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false });
@@ -22,7 +22,7 @@ const generateAccessAndRefreshToken = async (userId) => {
 
 const registerUser = asyncHandler(async (req, res) => {
     const { email, username, password, role } = req.body;
-    const userExists = User.findOne({
+    const userExists = await User.findOne({
         $or: [{ username }, { email }]
     })
 
@@ -32,8 +32,8 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const user = await User.create({
         email,
-        password,
         username,
+        password,
         isEmailVerified: false
     });
 
@@ -53,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
         ),
     });
 
-    const createdUser = await User.findById(user._id).select("-password -refreshToken, emailVerificationToken -emailVerificationExpiry");
+    const createdUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
 
     if (!createdUser) {
         throw new APIError(500, "Something went wrong while registering a user");
