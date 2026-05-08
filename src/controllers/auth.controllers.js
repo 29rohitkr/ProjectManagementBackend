@@ -1,5 +1,5 @@
-import { APIResponse } from "../utils/api-response";
-import { APIError } from "../utils/api-errors";
+import { APIResponse } from "../utils/api-response.js";
+import { APIError } from "../utils/api-errors.js";
 import { User } from "../models/user.models.js";
 import { asyncHandler } from "../utils/async-handler.js"
 import { sendEmail, emailVerificationMailgenContent } from "../utils/mail.js";
