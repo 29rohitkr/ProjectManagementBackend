@@ -2,7 +2,7 @@ import { APIResponse } from "../utils/api-response";
 import { APIError } from "../utils/api-errors";
 import { User } from "../models/user.models.js";
 import { asyncHandler } from "../utils/async-handler.js"
-import { sendEMail, emailVerificationMailgenContent } from "../utils/mail.js";
+import { sendEmail, emailVerificationMailgenContent } from "../utils/mail.js";
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -27,7 +27,7 @@ const registerUser = asyncHandler(async (req, res) => {
     })
 
     if (userExists) {
-        throw new APIError(409, "Username already exists", []);
+        throw new APIError(409, "Username or email already exists", []);
     }
 
     const user = await User.create({
@@ -53,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
         ),
     });
 
-    const createdUser = await User.findById(user._id).select("-password -refreshToken, emailVerificationToken -eailVerificationExpiry");
+    const createdUser = await User.findById(user._id).select("-password -refreshToken, emailVerificationToken -emailVerificationExpiry");
 
     if (!createdUser) {
         throw new APIError(500, "Something went wrong while registering a user");
