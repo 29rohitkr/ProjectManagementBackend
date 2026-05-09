@@ -33,4 +33,15 @@ app.get("/login", (req, res) => {
     res.send("This is login page");
 })
 
+// after implementing when throwing error. It is send in json format
+// Global Error handling middleware
+app.use((err, req, res, next) => {
+    res.status(err.statusCode || 500).json({
+        success: false,
+        statusCode: err.statusCode,
+        message: err.message,
+        errors: err.errors
+    });
+});
+
 export default app;
