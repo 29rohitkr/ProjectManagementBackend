@@ -116,7 +116,7 @@ const login = asyncHandler(async (req, res) => {
         throw new APIError(400, "Invalid Credentials.");
     }
 
-    const { accessToken, refreshToken } = generateAccessAndRefreshToken(user._id);
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id);
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
 
