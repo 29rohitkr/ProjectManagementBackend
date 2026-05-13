@@ -64,6 +64,47 @@ const registerUser = asyncHandler(async (req, res) => {
             "User registered successfully and verification email has been sent on user's email"
         )
     )
-})
+});
 
-export { registerUser };
+const login = asyncHandler(async (req, res) => {
+    const { email, username, password } = req.body;
+
+    if (!email) {
+        throw new APIError(400, "email is required");
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new APIError(400, "User not found with this email");
+    }
+
+    const isPasswordValid = await user.isPasswordValid(password);
+
+    if (!isPasswordValid) {
+        throw new APIError(400, "Invalid Credentials.");
+    }
+
+    const { accessToken, refreshToken } = generateAccessAndRefreshToken(user._id);
+
+    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
+
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new APIResponse(200, {
+                user: loggedInUser,
+                accessToken,
+                refreshToken
+            }, "User Logged In Successfully.")
+        )
+});
+
+export { registerUser, login };
