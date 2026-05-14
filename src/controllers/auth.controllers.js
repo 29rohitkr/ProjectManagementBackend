@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/async-handler.js"
 import { sendEmail, emailVerificationMailgenContent } from "../utils/mail.js";
 import crypto from "crypto";
 
+
 const generateAccessAndRefreshToken = async (userId) => {
     try {
         const user = await User.findById(userId);
@@ -97,7 +98,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     );
 });
 
-const login = asyncHandler(async (req, res) => {
+const loginUser = asyncHandler(async (req, res) => {
     const { email, username, password } = req.body;
 
     if (!email) {
@@ -138,5 +139,31 @@ const login = asyncHandler(async (req, res) => {
         )
 });
 
-export { registerUser, verifyUserEmail, login };
+const logoutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: "",
+            },
+        },
+        {
+            // new: true,
+            returnDocument: "after",
+        },
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    }
+
+    res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(new APIResponse(200, {}, "User logged out"));
+});
+
+export { registerUser, verifyUserEmail, loginUser, logoutUser };
 
