@@ -23,14 +23,15 @@ router.route("/login").post(userLoginValidator(), validate, loginUser);
 router.route("/verify-email/:verificationToken").get(verifyUserEmail);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/forgot-password").post(userForgotPasswordValidator(), validate, forgotPasswordRequest);
-router.route("/reset-password/:resetToken").post( userResetPasswordValidator(), validate,resetForgotPassword);
+router.route("/reset-password/:resetToken").post(userResetPasswordValidator(), validate, resetForgotPassword);
+router.route("/resend-email-verification").post(resendEmailVerification);
 
 
 // secure routes
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/current-user").get(verifyJWT, currentUser);
-router.route("/change-password").post(verifyJWT, userChangePasswordValidator(), validate,changePassword);
-router.route("/resend-email-verification").post(verifyJWT, resendEmailVerification);
+router.route("/change-password").post(verifyJWT, userChangePasswordValidator(), validate, changePassword);
+// moved resendEmailVerification to unsecured routes
 
 
 export default router;

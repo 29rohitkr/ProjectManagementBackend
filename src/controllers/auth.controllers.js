@@ -173,7 +173,10 @@ const currentUser = asyncHandler(async (req, res) => {
 });
 
 const resendEmailVerification = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
 
     if (!user) {
         throw new APIError(404, "User doesnot exist");
@@ -203,7 +206,7 @@ const resendEmailVerification = asyncHandler(async (req, res) => {
         .json(
             new APIResponse(200,
                 {},
-                "Verification mail sent to Your email."
+                "Verification email has been resent. Please check your email."
             )
         )
 })
