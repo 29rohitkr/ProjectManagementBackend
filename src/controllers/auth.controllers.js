@@ -325,9 +325,9 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
 const changePassword = asyncHandler(async (req, res) => {
     const { oldPassword, newPassword } = req.body;
 
-    if (!oldPassword || !newPassword) {
-        throw new APIError(400, "Both old and new password is required");
-    }
+    // if (!oldPassword || !newPassword) {
+    //     throw new APIError(400, "Both old and new password is required");
+    // }
 
     const user = await User.findById(req.user._id);
 
