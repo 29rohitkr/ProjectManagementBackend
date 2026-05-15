@@ -217,14 +217,15 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
     try {
         const decodedToken = jwt.verify(oldRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+
         const user = await User.findById(decodedToken?._id);
 
         if (!user) {
-            throw new APIError(401, "Invalid Refresh Token");
+            throw new APIError(401, "Invalid Refresh Token, User not found in DB.");
         }
 
-        if (oldRefreshToken !== user?.refreshToken) {
-            throw new APIError(401, "Invalid Refresh Token");
+        if (oldRefreshToken !== user.refreshToken) {
+            throw new APIError(401, " Refresh Token Does not match");
         }
 
         const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id); // it also update refresh token in DB
@@ -235,19 +236,20 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
         }
 
         return res.status(200)
-            .cookie("accessToke", accessToken, options)
+            .clearCookie("accessToken", options)
+            .cookie("accessToken", accessToken, options)
             .cookie("refreshToken", refreshToken, options)
             .json(
                 new APIResponse(
                     200,
-                    { accessToken, refreshToken: newRefreshToken },
+                    { accessToken, refreshToken },
                     "Access Token refreshed."
                 )
             )
 
 
     } catch (error) {
-        throw new APIError(401, "Invalid Refresh Token");
+        throw new APIError(401, "Invalid Refresh Token, caught in catch block");
     }
 });
 
@@ -287,8 +289,8 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
 });
 
 const resetForgotPassword = asyncHandler(async (req, res) => {
-    const {resetToken} = req.params;
-    const {newPassword} = req.body;
+    const { resetToken } = req.params;
+    const { newPassword } = req.body;
 
     const hashedToken = crypto.createHash("sha256")
         .update(resetToken)
@@ -297,11 +299,11 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
     const user = await User.findOne({
         forgotPasswordToken: hashedToken,
         forgotPasswordExpiry: {
-            $gt : Date.now()
+            $gt: Date.now()
         }
     });
 
-    if(!user){
+    if (!user) {
         throw new APIError(401, "reset Token Expired or Invalid reset Token");
     }
 
@@ -309,7 +311,7 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
     user.forgotPasswordToken = undefined;
     user.forgotPasswordExpiry = undefined;
 
-    await user.save({validateBeforeSave: false});
+    await user.save({ validateBeforeSave: false });
 
     return res
         .status(200)
