@@ -27,7 +27,7 @@ const sendEmail = async (options) => {
 
     const mail = {
         from: 'Project Team <team@devmodeon.tech>',
-        to: options.email, //"29rkwhitelist@gmail.com",
+        to: options.email,
         subject: options.subject,//"This is a test mail.",
         html: emailHtml,
         text: emailText
