@@ -254,7 +254,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const forgotPasswordRequest = asyncHandler(async (req, res) => {
-    const { email } = req.body.email;
+    const { email } = req.body;
 
     const user = await User.findOne({ email });
 
@@ -274,7 +274,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
         username: user.username,
         subject: "Password Reset Request",
         mailGenContent: forgotPasswordMailgenContent(user.username,
-            `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unHashedToken}`
+            `${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${unHashedToken}`
         ),
     });
 
@@ -283,7 +283,7 @@ const forgotPasswordRequest = asyncHandler(async (req, res) => {
             new APIResponse(
                 200,
                 {},
-                "Password Reset mail sent to your mail ID"
+                "Password reset link has been sent to your email. Link expires in 20 minutes."
             )
         )
 });
@@ -319,7 +319,7 @@ const resetForgotPassword = asyncHandler(async (req, res) => {
             new APIResponse(
                 200,
                 {},
-                "Password reset successfully"
+                "Password has been reset successfully. Please login with new password"
             )
         )
 })
