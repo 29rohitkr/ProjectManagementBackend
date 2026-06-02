@@ -182,18 +182,55 @@ const getProjectMembers = asyncHandler(async (req, res) => {
         throw new APIError(404, "Project does not exist.");
     }
 
-    const projectMembers = await ProjectMember.find({
-        project: new mongoose.Types.ObjectId(projectId)
-    })
-        .populate({ path: "user", select: "username email fullName avatar" })
-        .select("user role createdAt updatedAt");
+    const projectMembers = await ProjectMember.aggregate([
+        {
+            $match: {
+                project: mongoose.Types.ObjectId(projectId)
+            }
+        },
+        {
+            $lookup: {
+                from: "users",
+                localField: "user",
+                foreignField: "_id",
+                as: "user",
+                pipeline: [
+                    {
+                        $project: {
+                            _id: 1,
+                            username: 1,
+                            fullName: 1,
+                            avatar: 1
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            $addFields: {
+                user: {
+                    $arrElemAt: ["$user", 0]
+                }
+            }
+        },
+        {
+            $project: {
+                project: 1,
+                user: 1,
+                role: 1,
+                createdAt: 1,
+                updatedAt: 1,
+                _id: 0
+            }
+        }
+    ])
 
     return res.status(200).json(new APIResponse(200, projectMembers, "Project members fetched successfully."));
 
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {
-    //test
+
 });
 
 const deleteMember = asyncHandler(async (req, res) => {
