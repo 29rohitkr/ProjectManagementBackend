@@ -5,7 +5,7 @@ import { APIResponse } from "../utils/api-response.js";
 import { APIError } from "../utils/api-errors.js";
 import { asyncHandler } from "../utils/async-handler.js"
 import mongoose from "mongoose";
-import { UserRolesEnum } from "../utils/constants.js";
+import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 
 
 const getProjects = asyncHandler(async (req, res) => {
@@ -185,7 +185,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
     const projectMembers = await ProjectMember.aggregate([
         {
             $match: {
-                project: mongoose.Types.ObjectId(projectId)
+                project: new mongoose.Types.ObjectId(projectId)
             }
         },
         {
@@ -230,7 +230,36 @@ const getProjectMembers = asyncHandler(async (req, res) => {
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {
+    const { projectId, userId } = req.params;
+    const { newRole } = req.body;
 
+    if (!AvailableUserRoles.includes(newRole)) {
+        throw new APIError(400, "Invalid Role.");
+    }
+
+    const projectMember = await ProjectMember.findOneAndUpdate(
+        {
+            user: userId,       // Let Mongoose handle auto-casting to ObjectId
+            project: projectId
+        },
+        {
+            role: newRole
+        },
+        {
+            new: true           // Returns the updated document
+        }
+    );
+
+    // 3. If it returns null, the document didn't exist
+    if (!projectMember) {
+        // Note: 404 is the standard HTTP status code for "Not Found"
+        throw new APIError(404, "Project member not found.");
+    }
+
+    // 4. Send successful response
+    return res.status(200).json(
+        new APIResponse(200, "Project member role is updated.", projectMember)
+    );
 });
 
 const deleteMember = asyncHandler(async (req, res) => {
