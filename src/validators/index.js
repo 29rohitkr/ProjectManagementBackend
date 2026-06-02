@@ -74,7 +74,7 @@ const userResetPasswordValidator = () => {
     ]
 }
 
-const createprojectValidator = () => {
+const createProjectValidator = () => {
     return [
         body("name")
             .notEmpty()
@@ -106,6 +106,6 @@ export {
     userChangePasswordValidator,
     userForgotPasswordValidator,
     userResetPasswordValidator,
-    createprojectValidator,
+    createProjectValidator,
     addMembersToProjectValidator
 }
