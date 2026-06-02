@@ -62,16 +62,16 @@ const getProjects = asyncHandler(async (req, res) => {
 });
 
 const getProjectById = asyncHandler(async (req, res) => {
-    const {projectId} = req.params;
+    const { projectId } = req.params;
 
     const project = await Project.findById(projectId);
 
-    if(!project){
+    if (!project) {
         throw new APIError(404, "Project not found");
     }
 
     return res.status(200)
-        .json(new APIResponse(200,project, "Project fetched successfully."))
+        .json(new APIResponse(200, project, "Project fetched successfully."))
 });
 
 const createProject = asyncHandler(async (req, res) => {
@@ -162,7 +162,7 @@ const addMembersToProject = asyncHandler(async (req, res) => {
             user: new mongoose.Types.ObjectId(user._id),
             project: new mongoose.Types.ObjectId(projectId),
             role: role,
-        }, 
+        },
         {
             new: true,
             upsert: true
@@ -170,12 +170,26 @@ const addMembersToProject = asyncHandler(async (req, res) => {
     );
 
     return res
-                .status(201)
-                .json(new APIResponse(201,{},"Project Member added successfully." ))
+        .status(201)
+        .json(new APIResponse(201, {}, "Project Member added successfully."))
 });
 
 const getProjectMembers = asyncHandler(async (req, res) => {
-    //test
+    const { projectId } = req.params;
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+        throw new APIError(404, "Project does not exist.");
+    }
+
+    const projectMembers = await ProjectMember.find({
+        project: new mongoose.Types.ObjectId(projectId)
+    })
+        .populate({ path: "user", select: "username email fullName avatar" })
+        .select("user role createdAt updatedAt");
+
+    return res.status(200).json(new APIResponse(200, projectMembers, "Project members fetched successfully."));
+
 });
 
 const updateMemberRole = asyncHandler(async (req, res) => {
