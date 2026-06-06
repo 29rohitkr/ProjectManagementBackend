@@ -85,7 +85,7 @@ const createProjectValidator = () => {
 }
 
 const addMembersToProjectValidator = () => {
-    [
+    return [
         body("email")
             .trim()
             .notEmpty()

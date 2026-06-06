@@ -24,14 +24,14 @@ router.use(verifyJWT);
 router
     .route("/")
     .get(getProjects)
-    .post(createprojectValidator(), validate, createProject);
+    .post(createProjectValidator(), validate, createProject);
 
 router
     .route("/:projectId")
     .get(validateProjectPermission(AvailableUserRoles),
         getProjectById)
     .put(
-        validateProjectPermission([UserRolesEnum.ADMIN]), createprojectValidator(),
+        validateProjectPermission([UserRolesEnum.ADMIN]), createProjectValidator(),
         validate,
         updateProject)
     .delete(
@@ -41,8 +41,7 @@ router
 router
     .route("/:projectId/members")
     .get(getProjectMembers)
-    .post(
-        validateProjectPermission([UserRolesEnum.ADMIN]), addMembersToProjectValidator(),
+    .post(validateProjectPermission([UserRolesEnum.ADMIN]), addMembersToProjectValidator(),
         validate,
         addMembersToProject
     )
