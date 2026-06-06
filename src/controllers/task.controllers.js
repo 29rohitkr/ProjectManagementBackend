@@ -7,6 +7,7 @@ import { APIError } from "../utils/api-errors.js";
 import { asyncHandler } from "../utils/async-handler.js"
 import mongoose from "mongoose";
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+import { upload } from "../middleware/multer.middleware.js"
 
 const getTasks = asyncHandler(async (req, res) => {
     //test
