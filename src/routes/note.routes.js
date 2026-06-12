@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
     createNote,
-    updatNote,
+    updateNote,
     deleteNote,
     getNotes,
     getNoteById
@@ -27,7 +27,7 @@ router.route("/:projectId/n/:noteId")
         getNoteById
     )
     .put(validateProjectPermission(UserRolesEnum.ADMIN),
-        updatNote
+        updateNote
     )
     .delete(validateProjectPermission(UserRolesEnum.ADMIN), deleteNote)
 

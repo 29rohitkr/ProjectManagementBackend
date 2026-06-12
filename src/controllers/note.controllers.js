@@ -62,14 +62,15 @@ const createNote = asyncHandler(async (req, res) => {
     )
 })
 
-const updatNote = asyncHandler(async (req, res) => {
+const updateNote = asyncHandler(async (req, res) => {
     const { noteId } = req.params;
     const { content } = req.body;
 
     const note = await ProjectNote.findByIdAndUpdate(noteId,
         {
             content: content.trim()
-        }
+        },
+        { returnDocument: "after" }
     );
 
     if (!note) {
@@ -101,6 +102,6 @@ export {
     getNotes,
     getNoteById,
     createNote,
-    updatNote,
+    updateNote,
     deleteNote
 }
