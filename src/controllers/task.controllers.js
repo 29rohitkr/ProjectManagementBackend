@@ -240,7 +240,7 @@ const createSubTask = asyncHandler(async (req, res) => {
 
     const subtask = await SubTask.create({
         title: title,
-        task: mongoose.Types.ObjectId(task._id),
+        task: new mongoose.Types.ObjectId(task._id),
         createdBy: body.user._id
     })
 

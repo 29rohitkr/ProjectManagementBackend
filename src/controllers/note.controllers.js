@@ -36,8 +36,8 @@ const createNote = asyncHandler(async (req, res) => {
     }
 
     const note = await ProjectNote.create({
-        project: mongoose.Types.ObjectId(projectId),
-        createdBy: mongoose.Types.ObjectId(createdBy),
+        project: new mongoose.Types.ObjectId(projectId),
+        createdBy: new mongoose.Types.ObjectId(createdBy),
         content: content.trim()
     })
 

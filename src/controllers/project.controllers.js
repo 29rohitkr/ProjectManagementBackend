@@ -44,7 +44,7 @@ const getProjects = asyncHandler(async (req, res) => {
     },
     {
         $project: {
-            project: {
+            projects: {
                 _id: 1,
                 name: 1,
                 description: 1,
@@ -102,7 +102,7 @@ const createProject = asyncHandler(async (req, res) => {
 
 const updateProject = asyncHandler(async (req, res) => {
     const { name, description } = req.body;
-    const {projectId} = req.params;
+    const { projectId } = req.params;
 
     const project = await Project.findByIdAndUpdate(
         projectId,
@@ -147,28 +147,20 @@ const deleteProject = asyncHandler(async (req, res) => {
 
 const addMembersToProject = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
-    const {email, role} = req.body;
+    const { email, role } = req.body;
 
     const user = await User.findOne({ email });
 
     if (!user) {
-        throw new ApiError(404, "User does not exists");
+        throw new APIError(404, "User does not exists");
     }
 
-    await ProjectMember.findByIdAndUpdate(
-        {
-            user: new mongoose.Types.ObjectId(user._id),
-            project: new mongoose.Types.ObjectId(projectId),
-        },
+    const member = await ProjectMember.create(
         {
             user: new mongoose.Types.ObjectId(user._id),
             project: new mongoose.Types.ObjectId(projectId),
             role: role,
-        },
-        {
-            new: true,
-            upsert: true
-        },
+        }
     );
 
     return res
@@ -211,7 +203,7 @@ const getProjectMembers = asyncHandler(async (req, res) => {
         {
             $addFields: {
                 user: {
-                    $arrElemAt: ["$user", 0]
+                    $arrayElemAt: ["$user", 0]
                 }
             }
         },
@@ -265,14 +257,14 @@ const updateMemberRole = asyncHandler(async (req, res) => {
 });
 
 const deleteMember = asyncHandler(async (req, res) => {
-    const {projectId, userId} = req.params;
+    const { projectId, userId } = req.params;
 
     const projectMember = await ProjectMember.findOneAndDelete({
         user: new mongoose.Types.ObjectId(userId),
         project: new mongoose.Types.ObjectId(projectId)
     });
 
-    if(!projectMember){
+    if (!projectMember) {
         throw new APIError(404, "project member not found");
     }
 
