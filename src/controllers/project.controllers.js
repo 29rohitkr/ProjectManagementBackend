@@ -102,7 +102,7 @@ const createProject = asyncHandler(async (req, res) => {
 
 const updateProject = asyncHandler(async (req, res) => {
     const { name, description } = req.body;
-    const projectId = req.params;
+    const {projectId} = req.params;
 
     const project = await Project.findByIdAndUpdate(
         projectId,
