@@ -1,13 +1,25 @@
-import { ProjectNote } from "../models/note.models";
-import { Project } from "../models/project.models";
-import { APIResponse } from "../utils/api-response";
-import { APIError } from "../utils/api-errors";
-import { asyncHandler } from "../utils/async-handler";
+import { ProjectNote } from "../models/note.models.js";
+import { Project } from "../models/project.models.js";
+import { APIResponse } from "../utils/api-response.js";
+import { APIError } from "../utils/api-errors.js";
+import { asyncHandler } from "../utils/async-handler.js";
 import mongoose from "mongoose";
 
 
 const getNotes = asyncHandler(async (req, res) => {
+    const { projectId } = req.params;
 
+    const notes = await ProjectNote.find({
+        project: new mongoose.Types.ObjectId(projectId)
+    });
+
+    if (!notes) {
+        throw new APIError(404, "project not found");
+    }
+
+    return res.status(200).json(
+        new APIResponse(200, notes, "Notes fetched successfully.")
+    );
 })
 
 const getNoteById = asyncHandler(async (req, res) => {

@@ -26,8 +26,13 @@ app.use("/api/v1/healthcheck", healthCheckRouter);
 
 import authRouter from "./routes/auth.routes.js"
 import projectRouter from "./routes/project.routes.js"
+import taskRouter from "./routes/task.routes.js"
+import noteRouter from "./routes/note.routes.js"
+
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/project", projectRouter);
+app.use("/api/v1/tasks", taskRouter)
+app.use("/api/v1/notes", noteRouter)
 
 app.get("/", (req, res) => {
     res.send("Welcome to Project Management HomePage.");

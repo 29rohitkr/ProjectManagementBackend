@@ -1,0 +1,34 @@
+import { Router } from "express";
+import {
+    createNote,
+    updatNote,
+    deleteNote,
+    getNotes,
+    getNoteById
+} from "../controllers/note.controllers.js"
+import { verifyJWT, validateProjectPermission } from "../middleware/auth.middleware.js";
+import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+
+const router = Router();
+router.use(verifyJWT);
+
+
+router
+    .route("/:projectId")
+    .get(validateProjectPermission(AvailableUserRoles),
+        getNotes
+    )
+    .post(validateProjectPermission(UserRolesEnum.ADMIN),
+        createNote
+    )
+
+router.route("/:projectId/n/:noteId")
+    .get(validateProjectPermission(AvailableUserRoles),
+        getNoteById
+    )
+    .put(validateProjectPermission(UserRolesEnum.ADMIN),
+        updatNote
+    )
+    .delete(validateProjectPermission(UserRolesEnum.ADMIN), deleteNote)
+
+export default router;
