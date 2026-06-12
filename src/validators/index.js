@@ -113,8 +113,8 @@ const createTaskValidator = () => {
         body("status")
             .notEmpty()
             .withMessage("Status is required.")
-            .isIn(AvailableUserRoles)
-            .withMessage("Role is invalid."),
+            .isIn(AvailableTaskStatus)
+            .withMessage("Task status is invalid."),
         body("assignedTo")
             .optional()
             .trim()
@@ -134,6 +134,18 @@ const createSubTaskValidator = () => {
     ]
 }
 
+const updateSubTaskValidator = () => {
+    return [
+        body("title")
+            .optional()
+            .trim(),
+        body("isCompleted")
+            .optional()
+            .trim()
+            .isIn(["true", "false"])
+    ]
+}
+
 export {
     userRegisterValidator,
     userLoginValidator,
@@ -143,5 +155,6 @@ export {
     createProjectValidator,
     addMembersToProjectValidator,
     createTaskValidator,
-    createSubTaskValidator
+    createSubTaskValidator,
+    updateSubTaskValidator
 }

@@ -12,11 +12,13 @@ import {
 } from "../controllers/task.controllers.js"
 import {
     createTaskValidator,
-    createSubTaskValidator
+    createSubTaskValidator,
+    updateSubTaskValidator
 } from "../validators/index.js";
 import { validate } from "../middleware/validator.middleware.js";
 import { verifyJWT, validateProjectPermission } from "../middleware/auth.middleware.js";
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
+import { upload } from "../middleware/multer.middleware.js"
 
 const router = Router()
 router.use(verifyJWT);
@@ -29,6 +31,7 @@ router
     )
     .post(
         validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
+        upload.array("files"),
         createTaskValidator(),
         validate,
         createTask
@@ -43,7 +46,8 @@ router
     )
     .put(
         validateProjectPermission([UserRolesEnum.ADMIN, UserRolesEnum.PROJECT_ADMIN]),
-        createSubTaskValidator(),
+        upload.array("files"),
+        createTaskValidator(),
         validate,
         updateTask
     )
@@ -62,6 +66,8 @@ router
 router
     .route("/:projectId/st/:subTaskId")
     .put(validateProjectPermission(AvailableUserRoles),
+        updateSubTaskValidator(),
+        validate,
         updateSubTask
     )
     .delete(

@@ -8,7 +8,7 @@ import { APIError } from "../utils/api-errors.js";
 import { asyncHandler } from "../utils/async-handler.js"
 import { AvailableUserRoles, UserRolesEnum } from "../utils/constants.js";
 import { AvailableTaskStatus, TaskStatusEnum } from "../utils/constants.js";
-import { upload } from "../middleware/multer.middleware.js"
+
 
 const getTasks = asyncHandler(async (req, res) => {
     const { projectId } = req.params;
@@ -241,14 +241,14 @@ const createSubTask = asyncHandler(async (req, res) => {
     const subtask = await SubTask.create({
         title: title,
         task: new mongoose.Types.ObjectId(task._id),
-        createdBy: body.user._id
+        createdBy: req.user._id
     })
 
     return res.status(200).json(new APIResponse(200, subtask, "Subtask created successfully."))
 });
 
 const updateSubTask = asyncHandler(async (req, res) => {
-    const { staskId } = req.params;
+    const { subTaskId } = req.params;
     const { title, isCompleted } = req.body;
     const updateData = {};
 
@@ -260,24 +260,24 @@ const updateSubTask = asyncHandler(async (req, res) => {
         updateData.isCompleted = isCompleted;
     }
 
-    const stask = await SubTask.findByIdAndUpdate({
-        staskId,
-        updateData
-    });
+    const stask = await SubTask.findByIdAndUpdate(subTaskId,
+        updateData,
+        { returnDocument: "after" }
+    );
 
     if (!stask) {
         throw new APIError(404, "SubTask not updated.")
     }
 
     return res.status(200).json(
-        new APIResponse(200, stask, "Sub Task created.")
+        new APIResponse(200, stask, "Sub Task Updated successfully.")
     )
 });
 
 const deleteSubTask = asyncHandler(async (req, res) => {
-    const { staskId } = req.params;
+    const { subTaskId } = req.params;
 
-    const stask = await SubTask.findByIdAndDelete(staskId);
+    const stask = await SubTask.findByIdAndDelete(subTaskId);
 
     if (!stask) {
         throw new APIError(404, "SubTask deleted.")
