@@ -215,19 +215,77 @@ const updateTask = asyncHandler(async (req, res) => {
 });
 
 const deleteTask = asyncHandler(async (req, res) => {
-    //test
+    const { taskId } = req.params;
+
+    const task = await Task.findByIdAndDelete(taskId);
+
+    if (!task) {
+        throw new APIError(404, "Task not found.")
+    }
+
+    return res.status(200).json(
+        new APIResponse(200, task, "Task deleted successfully.")
+    )
 });
 
 const createSubTask = asyncHandler(async (req, res) => {
-    //test
+    const { taskId } = req.params;
+    const { title } = req.body;
+
+    const task = await Task.findById(taskId);
+
+    if (!task) {
+        throw new APIError(404, "Task not found. subtask cannot be created.");
+    }
+
+    const subtask = await SubTask.create({
+        title: title,
+        task: mongoose.Types.ObjectId(task._id),
+        createdBy: body.user._id
+    })
+
+    return res.status(200).json(new APIResponse(200, subtask, "Subtask created successfully."))
 });
 
 const updateSubTask = asyncHandler(async (req, res) => {
-    //test
+    const { staskId } = req.params;
+    const { title, isCompleted } = req.body;
+    const updateData = {};
+
+    if (title && title.trim()) {
+        updateData.title = title;
+    }
+
+    if (isCompleted === "true" || isCompleted === "false") {
+        updateData.isCompleted = isCompleted;
+    }
+
+    const stask = await SubTask.findByIdAndUpdate({
+        staskId,
+        updateData
+    });
+
+    if (!stask) {
+        throw new APIError(404, "SubTask not updated.")
+    }
+
+    return res.status(200).json(
+        new APIResponse(200, stask, "Sub Task created.")
+    )
 });
 
 const deleteSubTask = asyncHandler(async (req, res) => {
-    //test
+    const { staskId } = req.params;
+
+    const stask = await SubTask.findByIdAndDelete(staskId);
+
+    if (!stask) {
+        throw new APIError(404, "SubTask deleted.")
+    }
+
+    return res.status(200).json(
+        new APIResponse(200, stask, "SubTask deleted.")
+    )
 });
 
 
